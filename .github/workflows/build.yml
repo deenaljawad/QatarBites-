@@ -9,14 +9,17 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.14.3
       - name: Accept licenses
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
       - name: Build
         run: |
           unzip -q project.zip -d proj
-          cd "$(dirname "$(find proj -name gradlew | head -1)")"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          find proj -maxdepth 3 -name "settings.gradle*"
+          cd "$(dirname "$(find proj -name 'settings.gradle*' | head -1)")"
+          gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: app
