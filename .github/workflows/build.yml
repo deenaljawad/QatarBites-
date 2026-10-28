@@ -17,8 +17,9 @@ jobs:
       - name: Build
         run: |
           unzip -q project.zip -d proj
-          find proj -maxdepth 3 -name "settings.gradle*"
           cd "$(dirname "$(find proj -name 'settings.gradle*' | head -1)")"
+          grep -rn -A8 "signingConfigs" app/build.gradle.kts || true
+          keytool -genkeypair -v -keystore debug.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
